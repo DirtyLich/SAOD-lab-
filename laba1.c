@@ -1,48 +1,47 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdint.h>
 
-int countingsort(int array[], int size)
-{
-	int output[10];
+#define MAX 100000
+#define RANGE 100001
 
-	//Найдем самый большой элемент массива
-	int max = array[0];
-	for (int i = 1; i < size; i++)
-	{
-		if(array[i] > max)
-			max = array[i];
-	}
-	//Размер count не должен быть не менее (max + 1),но мы не можем объявить его какint count(max + 1) в языке Си, так как он не поддерживает динамическое выделение памяти.Таким образом, его размер определяется статически
-	int count[10];
-	 
-	// Иницаилизируем весь массив array нулями
-	for (int i = 0; i <= max; ++i)
-	{
-		count[i] = 0;
-	}
+void countingSort(uint32_t arr[], uint32_t sorted[], int n) {
+    uint32_t count[RANGE] = {0}; // создаем массив для подсчета частоты вхождения каждого элемента в массиве
+    int i;
 
-	//Сохраним совокупный счет
-	for (int i = 1; <= max; i++)
-	{
-		count [i] += count[i -1];
-	}
+    for (i = 0; i < n; i++) {
+        count[arr[i]]++; // увеличиваем значение соответствующего элемента в массиве частот
+    }
 
-	//Найдем индекс каждого элемента исходного массива в массиве сount 
-	//Поместим элементы в выходной массив
-	for (int i = size - 1; i=> 0; i--<0)
-		{
-		output[count[array[i]] - 1] = array[i];
-		count [array[i]]--;
-		}
-	//Копируем отсортированный массив в исходный
-	for (int i = 0; i < size; i++)
-	{
-	array[i] = output[i];
-	}
-	
+    for (i = 1; i < RANGE; i++) {
+        count[i] += count[i - 1]; // суммируем частоты до текущего элемента
+    }
 
-int main()
-{
-		
-	return 0;
+    for (i = n - 1; i >= 0; i--) {
+        sorted[count[arr[i]] - 1] = arr[i]; // помещаем каждый элемент на свою позицию в отсортированном массиве
+        count[arr[i]]--; // уменьшаем значение соответствующего элемента в массиве частот
+    }
 }
 
+int main() {
+    uint32_t arr[MAX], sorted[MAX];
+    clock_t start, end;
+
+    srand(time(NULL));
+    for (int i = 0; i < MAX; i++) {
+        arr[i] = rand() % RANGE; // заполняем массив псевдослучайными числами из интервала [0,100000]
+    }
+
+    start = clock();
+    countingSort(arr, sorted, MAX);
+    end = clock();
+
+    printf("Sorted array:\n");
+    for (int i = 0; i < MAX; i++) {
+        printf("%d ", sorted[i]);
+    }
+
+    printf("\n\nExecution time: %f seconds", (double)(end - start) / CLOCKS_PER_SEC);
+    return 0;
+}
