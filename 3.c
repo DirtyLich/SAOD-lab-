@@ -3,51 +3,44 @@
 #include <time.h>
 #include <stdint.h>
 
-void counting_sort(uint32_t arr[], uint32_t n) {
-    uint32_t max = 0;
-    for (uint32_t i = 0; i < n; i++) {
-        if (arr[i] > max) {
-            max = arr[i];
-        }
-    }
+#define MAX 100000
 
-    uint32_t* count_arr = (uint32_t*) calloc(max+1, sizeof(uint32_t));
-    for (uint32_t i = 0; i < n; i++) {
-        count_arr[arr[i]]++;
-    }
+void insertionSort(uint32_t arr[], int n) {
+    int i, j;
+    uint32_t key;
 
-    uint32_t j = 0;
-    for (uint32_t i = 0; i <= max; i++) {
-        while (count_arr[i] > 0) {
-            arr[j] = i;
-            j++;
-            count_arr[i]--;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+
+        // перемещаем элементы, которые больше ключевого, на одну позицию вперед
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
         }
+
+        arr[j + 1] = key; // помещаем ключевой элемент на свою позицию в отсортированной последовательности
     }
-    free(count_arr);
 }
 
 int main() {
-    uint32_t n = 100000;
-    uint32_t* arr = (uint32_t*) malloc(n * sizeof(uint32_t));
+    uint32_t arr[MAX];
+    clock_t start, end;
 
-    // Заполнение массива случайными числами
     srand(time(NULL));
-    for (uint32_t i = 0; i < n; i++) {
-        arr[i] = rand() % 100001;
+    for (int i = 0; i < MAX; i++) {
+        arr[i] = rand() % 100001; // заполняем массив псевдослучайными числами из интервала [0,100000]
     }
 
-    // Измерение времени работы сортировки
-    clock_t start = clock();
-    counting_sort(arr, n);
-    clock_t end = clock();
+    start = clock();
+    insertionSort(arr, MAX);
+    end = clock();
 
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("Time elapsed: %f seconds\n", time_spent);
+    printf("Sorted array:\n");
+    for (int i = 0; i < MAX; i++) {
+        printf("%d ", arr[i]);
+    }
 
-    // Проверка правильности сортировки (вывод отсортированного массива)
-
-    free(arr);
+    printf("\n\nExecution time: %f seconds", (double)(end - start) / CLOCKS_PER_SEC);
     return 0;
 }
-
